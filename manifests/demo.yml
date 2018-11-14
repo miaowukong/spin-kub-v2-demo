@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
       - name: primary
-        image: miaowukong/spin-kub-v2-demo:release-2.1
+        image: miaowukong/spin-kub-v2-demo:release-2.4
         ports:
         - containerPort: 8000
         readinessProbe:
