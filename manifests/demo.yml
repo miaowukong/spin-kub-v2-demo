@@ -5,8 +5,8 @@ metadata:
   namespace: spinnaker
 data:
   NEW_FEATURE: "true"
----
 
+---
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
