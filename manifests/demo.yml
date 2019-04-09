@@ -5,6 +5,7 @@ metadata:
     app: demo-app
     release: canary
   name: demo-app-canary
+  namespace: spinnaker
 spec:
   replicas: 1
   template:
