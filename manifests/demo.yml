@@ -1,59 +1,44 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: spinnaker-demo-config
-  namespace: spinnaker
-data:
-  NEW_FEATURE: "true"
-
----
-
-apiVersion: apps/v1beta2
+apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: spinnaker-demo
-  namespace: spinnaker
   labels:
-    source: demo
-    stack: frontend
-    app: spinnaker
+    app: demo-app
+    release: canary
+  name: demo-app-canary
 spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      source: demo
-      app: spinnaker
+  replicas: 1
   template:
     metadata:
       labels:
-        source: demo
-        app: spinnaker
+        app: demo-app
+        release: canary
     spec:
       containers:
-      - name: primary
-        image: index.docker.io/lwander/spin-kub-v2-demo
-        ports:
-        - containerPort: 8000
+      - image: kshatrix/canary-demo
+        name: demo-app
         readinessProbe:
           httpGet:
             path: /
-            port: 8000
-        envFrom:
-        - configMapRef:
-            name: spinnaker-demo-config
-
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 2
 ---
-
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
-  name: spinnaker-demo
-  namespace: spinnaker
+  annotations:
+    prometheus.io/path: /
+    prometheus.io/port: "8000"
+    prometheus.io/scrape: "true"
+  labels:
+    app: demo-app
+    release: canary
+  name: demo-app-canary
 spec:
-  selector:
-    source: demo
-    app: spinnaker
   ports:
-  - protocol: TCP
+  - name: http
     port: 80
-    targetPort: 8000
+  - name: http-metrics
+    port: 8000
+  selector:
+    app: demo-app
